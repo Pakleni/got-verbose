@@ -75,6 +75,15 @@ const http = new Proxy(got.extend({
 			}
 		} ],
 		afterResponse: [ (response) => {
+			if(process.env.HTTP_WARN) {
+				const warnTime = +process.env.HTTP_WARN;
+
+				const time = ((new Date()) - response.request.options._start) / 1000;
+
+				if(time > warnTime) {
+					console.error(`${response.request.options.method} request to ${response.request.options.url} took ${time}s. (>${warnTime}s)`);
+				}
+			}
 			if(process.env.HTTP_TRACE) {
 				const time = ((new Date()) - response.request.options._start) / 1000;
 
