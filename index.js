@@ -48,6 +48,24 @@ const http = new Proxy(got.extend({
 			error.stack = error.stack.replace(error.message, error.message + ` while sending ${error.request.options.method} request to ${error.request.options.url.href}`);
 			error.message += ` while sending ${error.request.options.method} request to ${error.request.options.url.href}`;
 
+			const options = error.request.options;
+			const response = error.response;
+
+			error.http = {
+				url: options.url.toString(),
+				method: options.method,
+				req: {
+					headers: options.headers,
+					body: options.body?.toString(),
+				},
+				res: {
+					status: response?.statusCode,
+					message: response?.statusMessage,
+					headers: response?.headers,
+					body: response?.body?.toString()
+				}
+			};
+
 			if(process.env.HTTP_TRACE) {
 				console.error(error.message);
 			}
